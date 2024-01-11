@@ -1,13 +1,18 @@
 cmake_minimum_required (VERSION 3.0)
 project (myproject)
-include_directories ("${PROJECT_SOURCE_DIR}/third_party/eigen")
-# 查找当前目录下的所有源文件
-# 并将名称保存到 DIR_SRCS 变量
-aux_source_directory(. DIR_SRCS)
-# 添加 math 子目录
-add_subdirectory(src)
-# 指定生成目标 
-add_executable(demo ${DIR_SRCS})
-# 添加链接库
-target_link_libraries(demo MiniDNNLib)
 
+# Include Eigen library from third_party directory
+include_directories ("${PROJECT_SOURCE_DIR}/third_party/eigen")
+
+# Find all source files in the current directory
+# and save their names to the DIR_SRCS variable
+aux_source_directory(. DIR_SRCS)
+
+# Add the src subdirectory
+add_subdirectory(src)
+
+# Specify the target to be generated
+add_executable(train ${DIR_SRCS})
+
+# Add linking library
+target_link_libraries(train MiniDNNLib)

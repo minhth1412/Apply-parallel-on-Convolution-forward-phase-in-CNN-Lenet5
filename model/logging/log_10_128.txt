@@ -1,0 +1,137 @@
+Loading fashion-mnist data...
+Reading train-images-idx3-ubyte...Done
+Reading train-labels-idx1-ubyte...Done
+Reading t10k-images-idx3-ubyte...Done
+Reading t10k-labels-idx1-ubyte...Done
+mnist train number: 60000
+mnist test number: 10000
+0-th batch, loss: 2.30238
+50-th batch, loss: 2.30145
+100-th batch, loss: 2.3031
+150-th batch, loss: 2.30107
+200-th batch, loss: 2.30298
+250-th batch, loss: 2.30268
+300-th batch, loss: 2.29868
+350-th batch, loss: 2.29346
+400-th batch, loss: 2.15354
+450-th batch, loss: 1.46961
+
+1-st epoch, test acc: 0.5295
+
+0-th batch, loss: 1.17406
+50-th batch, loss: 1.04812
+100-th batch, loss: 0.849763
+150-th batch, loss: 0.817805
+200-th batch, loss: 0.882633
+250-th batch, loss: 0.753715
+300-th batch, loss: 0.752016
+350-th batch, loss: 0.753832
+400-th batch, loss: 0.562739
+450-th batch, loss: 0.918881
+
+2-nd epoch, test acc: 0.7313
+
+0-th batch, loss: 0.730811
+50-th batch, loss: 0.730508
+100-th batch, loss: 0.561594
+150-th batch, loss: 0.631745
+200-th batch, loss: 0.495504
+250-th batch, loss: 0.551103
+300-th batch, loss: 0.515548
+350-th batch, loss: 0.665067
+400-th batch, loss: 0.483316
+450-th batch, loss: 0.452228
+
+3-rd epoch, test acc: 0.7745
+
+0-th batch, loss: 0.589689
+50-th batch, loss: 0.582922
+100-th batch, loss: 0.323138
+150-th batch, loss: 0.300758
+200-th batch, loss: 0.602705
+250-th batch, loss: 0.475504
+300-th batch, loss: 0.397297
+350-th batch, loss: 0.611436
+400-th batch, loss: 0.391
+450-th batch, loss: 0.401075
+
+4-th epoch, test acc: 0.8164
+
+0-th batch, loss: 0.419213
+50-th batch, loss: 0.421682
+100-th batch, loss: 0.398
+150-th batch, loss: 0.522594
+200-th batch, loss: 0.378966
+250-th batch, loss: 0.592428
+300-th batch, loss: 0.661977
+350-th batch, loss: 0.474719
+400-th batch, loss: 0.38303
+450-th batch, loss: 0.528784
+
+5-th epoch, test acc: 0.8332
+
+0-th batch, loss: 0.386964
+50-th batch, loss: 0.385614
+100-th batch, loss: 0.375349
+150-th batch, loss: 0.459364
+200-th batch, loss: 0.341166
+250-th batch, loss: 0.397531
+300-th batch, loss: 0.374043
+350-th batch, loss: 0.307817
+400-th batch, loss: 0.452686
+450-th batch, loss: 0.391774
+
+6-th epoch, test acc: 0.8458
+
+0-th batch, loss: 0.379994
+50-th batch, loss: 0.573829
+100-th batch, loss: 0.357965
+150-th batch, loss: 0.378981
+200-th batch, loss: 0.472443
+250-th batch, loss: 0.296841
+300-th batch, loss: 0.397099
+350-th batch, loss: 0.33839
+400-th batch, loss: 0.282793
+450-th batch, loss: 0.429133
+
+7-th epoch, test acc: 0.8508
+
+0-th batch, loss: 0.495962
+50-th batch, loss: 0.366829
+100-th batch, loss: 0.408495
+150-th batch, loss: 0.378063
+200-th batch, loss: 0.386938
+250-th batch, loss: 0.402379
+300-th batch, loss: 0.394003
+350-th batch, loss: 0.332339
+400-th batch, loss: 0.3997
+450-th batch, loss: 0.49459
+
+8-th epoch, test acc: 0.8644
+
+0-th batch, loss: 0.393799
+50-th batch, loss: 0.298404
+100-th batch, loss: 0.337193
+150-th batch, loss: 0.331739
+200-th batch, loss: 0.357107
+250-th batch, loss: 0.280902
+300-th batch, loss: 0.349101
+350-th batch, loss: 0.369414
+400-th batch, loss: 0.389963
+450-th batch, loss: 0.371785
+
+9-th epoch, test acc: 0.8625
+
+0-th batch, loss: 0.482492
+50-th batch, loss: 0.321916
+100-th batch, loss: 0.346134
+150-th batch, loss: 0.380947
+200-th batch, loss: 0.335118
+250-th batch, loss: 0.433826
+300-th batch, loss: 0.343283
+350-th batch, loss: 0.301578
+400-th batch, loss: 0.339655
+450-th batch, loss: 0.247164
+
+10-th epoch, test acc: 0.8562
+
