@@ -70,16 +70,14 @@ void MNIST::read() {
 	// Read the training data and labels into memory
 	std::cout << "Reading train-images-idx3-ubyte...";
 	read_mnist_data("train-images-idx3-ubyte", train_data);
-	std::cout << "Done\n";
-	std::cout << "Reading train-labels-idx1-ubyte...";
+	std::cout << "Done\nReading train-labels-idx1-ubyte...";
 	read_mnist_label("train-labels-idx1-ubyte", train_labels);
 	std::cout << "Done\n";
 
 	// Read the testing data and labels into memory
 	std::cout << "Reading t10k-images-idx3-ubyte...";
 	read_mnist_data("t10k-images-idx3-ubyte", test_data);
-	std::cout << "Done\n";
-	std::cout << "Reading t10k-labels-idx1-ubyte...";
+	std::cout << "Done\nReading t10k-labels-idx1-ubyte...";
 	read_mnist_label("t10k-labels-idx1-ubyte", test_labels);
 	std::cout << "Done\n";
 }

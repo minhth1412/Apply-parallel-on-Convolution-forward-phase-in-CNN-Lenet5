@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "src/layer.h"
 #include "src/layer/ave_pooling.h"
@@ -26,18 +27,30 @@
 #include "src/optimizer/sgd.h"
 
 int main(int argc, char* argv[]) {
-	// Solved, using visual studio to run this program, the argv[0] is the path of the program, that check the path of the program if it is correct.
-	std::cout << argv[0] << '\n';
-
+	// Solved, using visual studio to run this program, the argv[0] is the path of the program, that 
+	// check the path of the program if it is correct.
+	std::cout << "current path: " << argv[0] << '\n';
+	std::cout << "In case you are running this project without Visual Studio, you might need above path	for hard-core set up the filepath in this file.\n";
+	std::cout << "Input: type the number of epoch that you want for training phase: n_epoch = ";
+	int n_epoch;
+	std::cin >> n_epoch;
+	std::cout << "Input: type the batch size that you want for training phase: batch_size = ";
+	int batch_size;
+	std::cin >> batch_size;
+	std::string path = "../../../model/trained_model_" + std::to_string(n_epoch) + "_" + std::to_string(batch_size) + ".bin";
+	std::string log_path = "../../../model/logging/log_" + std::to_string(n_epoch) + "_" + std::to_string(batch_size) + ".txt";
 	// Create a log file
-	std::ofstream logFile("../../../model/logging/log_5_128.txt");
-	// Redirect std::cout to the log file, but it will not display on the console, so I need to use printf to display on the console, it will be a little bit ugly but it needs for eye debugging
+	std::ofstream logFile(log_path);
+	// Redirect std::cout to the log file, but it will not display on the console, so I need to 
+	// use printf to display on the console, it will be a little bit ugly but it needs for eye debugging
 	std::streambuf* coutBuffer = std::cout.rdbuf();
 	std::cout.rdbuf(logFile.rdbuf());
 
 	// data
+	printf("Time for training data is quite long, I already save my trained model in the path %s\n", path.c_str());
+	printf("If you want more details about training stage, the logging file is yours to check.\nIt is located at %s\n", log_path.c_str());
 
-	// use this path "../data/" or "./data" when run in google colab
+	// use this path "../data/" or "./data" when run in google colab, make sure to check the path of the data
 	//MNIST dataset("./data/");
 	// use this path "../../../data/" when run in visual studio
 	MNIST dataset("../../../data/");
@@ -92,12 +105,14 @@ int main(int argc, char* argv[]) {
 	Loss* loss = new CrossEntropy;
 	dnn.add_loss(loss);
 	// train
-	SGD opt(0.01, 5e-4, 0.9, true);		// learning rate = 0.001, weight_decay = 5e-4, momentum = 0.9, nesterov = true
+	SGD opt(0.01, 5e-4, 0.9, true);		// learning rate = 0.01, weight_decay = 5e-4, momentum = 0.9, nesterov = true
 	// SGD opt(0.001);
-	// Test epoch here for best model with highest training accurancy, in range [5, 10]
-	const int n_epoch = 5;
-	// Also test batch size here for best model with highest training accurancy, choose one of this {32, 64, 128, 256}
-	const int batch_size = 128;
+	
+	// Bigger n_epoch will take more time to train but it will create a model having higher training accurancy.
+	// Also test batch size here for best model with highest training accurancy, choose exponential of 2 {32, 64, 128}.
+	// In this project I choose 64 for batch size, and 32 for n_epoch, it takes about 800 minutes to train.
+	// If I have more time, I will find the way to train model with python using GPU in google colab, it will be much faster.
+	
 	for (int epoch = 0; epoch < n_epoch; epoch++) {
 		shuffle_data(dataset.train_data, dataset.train_labels);
 		for (int start_idx = 0; start_idx < n_train; start_idx += batch_size) {
@@ -151,7 +166,7 @@ int main(int argc, char* argv[]) {
 	logFile.close();
 
 	// Save the trained model into a file, with the name "trained_model_<n_epoch>_<batch_size>.bin" to choose the best model that has the highest training accuracy
-	dnn.save_parameters("../../../model/trained_model_10_128.bin");
+	dnn.save_parameters(path);
 	return 0;
 }
 
