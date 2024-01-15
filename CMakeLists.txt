@@ -12,7 +12,7 @@ aux_source_directory(. DIR_SRCS)
 add_subdirectory(src)
 
 # Specify the target to be generated
-add_executable(train ${DIR_SRCS})
+add_executable(main ${DIR_SRCS})
 
 # Add linking library
-target_link_libraries(train MiniDNNLib)
+target_link_libraries(main MiniDNNLib)
