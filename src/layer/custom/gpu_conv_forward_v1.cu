@@ -6,7 +6,8 @@
 #define TILE_WIDTH 16
 
 // Create a constant memory for the filter
-__constant__ float dc_filter[2048];
+// Size of weight_data is 9600, so I have this:
+__constant__ float dc_filter[9601];
 
 __global__ void conv_forward_kernel(float* d_out, const float* d_in, const float* kernel,
     const int out_channel, const int in_channel,
@@ -62,10 +63,20 @@ void GPU_Conv_Forward::execute(const float* in_data, float* out_data, const floa
     float* d_in, * d_out;
     CHECK(cudaMalloc((void**)&d_in, n * in_channel * height_in * width_in * sizeof(float)));                      // input features map is in_channel
     CHECK(cudaMalloc((void**)&d_out, n * out_channel * height_out * width_out * sizeof(float)));                  // output feature map is out_channel
-   
+
     // Copy input and mask data to device
     CHECK(cudaMemcpy(d_in, in_data, n * in_channel * height_in * width_in * sizeof(float), cudaMemcpyHostToDevice));
-    CHECK(cudaMemcpyToSymbol(dc_filter, weight_data, output_channel * input_channel * kernel_height * kernel_height * sizeof(float)));
+    // int mx;
+    // if (out_channel * in_channel * kernel_height * kernel_height > 2048)
+    // {
+    //   std::cout <<"bigger than 2048\n";
+    //   mx =  sizeof(float);
+    //   std::cout << mx << '\n';
+    // }
+    // else{
+    //   mx = 2048;
+    // }
+    CHECK(cudaMemcpyToSymbol(dc_filter, weight_data, out_channel * in_channel * kernel_height * kernel_height * sizeof(float)));
 
     // Set the kernel dimensions and call the kernel
     int grid_z = (height_out + TILE_WIDTH - 1) / TILE_WIDTH * ((width_out + TILE_WIDTH - 1) / TILE_WIDTH);
@@ -75,12 +86,12 @@ void GPU_Conv_Forward::execute(const float* in_data, float* out_data, const floa
     // Launch the kernel
     GpuTimer timer;
     timer.Start();
-    conv_forward_kernel << <gridSize, blockSize >> > (d_out, d_in, d_weight,
+    conv_forward_kernel << <gridSize, blockSize >> > (d_out, d_in, dc_filter,
         out_channel, in_channel, height_in, width_in, kernel_height);
 
     timer.Stop();
     std::cout << "Kernel time: " << timer.Elapsed() << " ms\n";
-    
+
     // Check for errors in kernel launch if any
     cudaError_t errSync = cudaGetLastError();
     cudaError_t errAsync = cudaDeviceSynchronize();

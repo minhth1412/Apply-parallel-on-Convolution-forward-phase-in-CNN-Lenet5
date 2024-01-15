@@ -21,14 +21,6 @@ custom0:
 custom1:
 	nvcc --compile src/layer/custom/gpu_conv_forward_v1.cu -o src/layer/custom/gpu_conv_forward_v1.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
 	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
-
-custom2:
-	nvcc --compile src/layer/custom/gpu_conv_forward_v2.cu -o src/layer/custom/gpu_conv_forward_v2.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
-	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
-
-custom3:
-	nvcc --compile src/layer/custom/gpu_conv_forward_v3.cu -o src/layer/custom/gpu_conv_forward_v3.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
-	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
 		
 loss: src/loss/cross_entropy_loss.cc src/loss/mse_loss.cc
 	nvcc -arch=sm_75 --compile src/loss/cross_entropy_loss.cc -o src/loss/cross_entropy_loss.o -I./ -I third_party/eigen
@@ -41,12 +33,6 @@ main: main.o custom0
 	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
 
 main_custom1: main.o custom1
-	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
-
-main_custom2: main.o custom2
-	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
-
-main_custom3: main.o custom3
 	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
 
 main.o: main.cc
@@ -71,9 +57,3 @@ run0: main
 
 run1: main_custom1
 	./main 1
-
-run2: main_custom2
-	./main 2
-
-run3: main_custom3
-	./main 3
