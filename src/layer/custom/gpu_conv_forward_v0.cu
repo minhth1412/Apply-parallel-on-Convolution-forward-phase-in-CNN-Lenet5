@@ -5,8 +5,8 @@
 
 #define TILE_WIDTH 16
 
-__global__ void conv_forward_kernel(float* output, const float* input, const float* kernel,
-    const int num_samples, const int output_channel, const int input_channel,
+__global__ void conv_forward_kernel(float* d_out, const float* d_in, const float* kernel,
+    const int out_channel, const int in_channel,
     const int height, const int width, const int kernel_size)
 {
     const int height_out = height - kernel_size + 1;
@@ -17,6 +17,7 @@ __global__ void conv_forward_kernel(float* output, const float* input, const flo
     int bx = blockIdx.x; 
     int by = blockIdx.y;  
     int bz = blockIdx.z;
+
     int row_idx = (bz / width_grid) * TILE_WIDTH + threadIdx.y; // row of the image matrix
     int col_idx = (bz % width_grid) * TILE_WIDTH + threadIdx.x; // col of the image matrix
 
@@ -24,7 +25,7 @@ __global__ void conv_forward_kernel(float* output, const float* input, const flo
 
     if (row_idx < height_out && col_idx < width_out)
     {
-        for (int in_idx = 0; in_idx < input_channel; in_idx++)
+        for (int in_idx = 0; in_idx < in_channel; in_idx++)
         {
             for (int kernel_row = 0; kernel_row < kernel_size; kernel_row++)
             {
@@ -33,19 +34,16 @@ __global__ void conv_forward_kernel(float* output, const float* input, const flo
                     int input_row = row_idx + kernel_row;
                     int input_col = col_idx + kernel_col;
                     int kernel_area = kernel_size * kernel_size;
+                    int in_area = height * width;
 
-                    accumulator += input[(bx * (input_channel * height * width)) +
-                        (in_idx * (height * width)) + (input_row * width) + input_col] *
-                        kernel[(by * (input_channel * kernel_area)) +
-                        (in_idx * kernel_area) +
-                        (kernel_row * kernel_size) + kernel_col];
+                    accumulator += d_in[(bx * (in_channel * in_area)) + (in_idx * in_area) + (input_row * width) + input_col] *
+                        kernel[(by * (in_channel * kernel_area)) + (in_idx * kernel_area) + (kernel_row * kernel_size) + kernel_col];
                 }
             }
         }
-        output[(bx * (output_channel * height_out * width_out)) +
-            (by * (height_out * width_out)) +
-            (row_idx * width_out) + col_idx] = accumulator;
-    } // endif (row_idx < height_out && col_idx < width_out)
+        int out_area = height_out * width_out;
+        d_out[bx * (out_channel * out_area) + by * out_area + row_idx * width_out + col_idx] = accumulator;
+    }
 }
 
 void GPU_Conv_Forward::execute(const float* in_data, float* out_data, const float* weight_data,
@@ -76,8 +74,7 @@ void GPU_Conv_Forward::execute(const float* in_data, float* out_data, const floa
     GpuTimer timer;
     timer.Start();
     conv_forward_kernel << <gridSize, blockSize >> > (d_out, d_in, d_weight,
-        n, out_channel, in_channel,
-        height_in, width_in, kernel_height);
+        out_channel, in_channel, height_in, width_in, kernel_height);
 
     timer.Stop();
     std::cout << "Kernel time: " << timer.Elapsed() << " ms\n";
