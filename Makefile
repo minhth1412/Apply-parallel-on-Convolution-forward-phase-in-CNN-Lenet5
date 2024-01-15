@@ -14,41 +14,46 @@ layer: src/layer/conv.cc src/layer/conv_gpu.cc src/layer/ave_pooling.cc src/laye
 	nvcc --compile src/layer/sigmoid.cc -o src/layer/sigmoid.o -I./ -I third_party/eigen
 	nvcc --compile src/layer/softmax.cc -o src/layer/softmax.o -I./ -I third_party/eigen
 
-main: main.o
-    nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
+custom0:
+	nvcc --compile src/layer/custom/gpu_conv_forward_v0.cu -o src/layer/custom/gpu_conv_forward_v0.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
 
-main_custom1: main.o custom0
-    nvcc -DGPU_VERSION=0 -o main_custom -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+custom1:
+	nvcc --compile src/layer/custom/gpu_conv_forward_v1.cu -o src/layer/custom/gpu_conv_forward_v1.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
 
-main_custom1: main.o custom1
-    nvcc -DGPU_VERSION=1 -o main_custom1 -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+custom2:
+	nvcc --compile src/layer/custom/gpu_conv_forward_v2.cu -o src/layer/custom/gpu_conv_forward_v2.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
 
-main_custom2: main.o custom2
-    nvcc -DGPU_VERSION=2 -o main_custom2 -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
-
-main_custom3: main.o custom3
-    nvcc -DGPU_VERSION=3 -o main_custom3 -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
-
+custom3:
+	nvcc --compile src/layer/custom/gpu_conv_forward_v3.cu -o src/layer/custom/gpu_conv_forward_v3.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart
+		
 loss: src/loss/cross_entropy_loss.cc src/loss/mse_loss.cc
 	nvcc -arch=sm_75 --compile src/loss/cross_entropy_loss.cc -o src/loss/cross_entropy_loss.o -I./ -I third_party/eigen
 	nvcc -arch=sm_75 --compile src/loss/mse_loss.cc -o src/loss/mse_loss.o -I./ -I third_party/eigen
 
-custom: custom/gpu_conv_forward_v0.o custom/gpu_utils.o
-
-custom1: custom/gpu_conv_forward_v1.o custom/gpu_utils.o
-
-custom2: custom/gpu_conv_forward_v2.o custom/gpu_utils.o
-
-custom3: custom/gpu_conv_forward_v3.o custom/gpu_utils.o
-
 optimizer: src/optimizer/sgd.cc
 	nvcc -arch=sm_75 --compile src/optimizer/sgd.cc -o src/optimizer/sgd.o -I./ -I third_party/eigen
+
+main: main.o custom0
+	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+
+main_custom1: main.o custom1
+	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+
+main_custom2: main.o custom2
+	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+
+main_custom3: main.o custom3
+	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
 
 main.o: main.cc
 	nvcc --compile main.cc -I./ -I third_party/eigen
 
 clean:
-	rm -f main train main_custom1 main_custom2 main_custom3 main_custom0
+	rm -f main train 
 	rm -f *.o src/*.o src/layer/*.o src/loss/*.o src/optimizer/*.o src/layer/custom/*.o
 
 setup:
@@ -58,8 +63,17 @@ setup:
 	make loss
 	make optimizer
 
-run:
+run: main
 	./main
-	./main_custom0
-	./main_custom2
-	./main_custom3
+
+run0: main
+	./main 0
+
+run1: main_custom1
+	./main 1
+
+run2: main_custom2
+	./main 2
+
+run3: main_custom3
+	./main 3
