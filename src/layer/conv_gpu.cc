@@ -76,7 +76,7 @@ void Conv_gpu::forward(const Matrix& bottom) {
 
 	// Stop the timer
 	timer.Stop();
-	std::cout << "Total time running this layer: " timer.Elapsed() << " ms\n";
+	std::cout << "Total time running this layer: " << timer.Elapsed() << " ms\n";
 }
 
 // col2im, used for grad_bottom

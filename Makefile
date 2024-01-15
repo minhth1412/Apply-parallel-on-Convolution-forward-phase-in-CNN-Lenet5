@@ -4,9 +4,10 @@ network.o: src/network.cc
 mnist.o: src/mnist.cc
 	nvcc --compile src/mnist.cc -o src/mnist.o -I src/ -I third_party/eigen
 
-layer: src/layer/conv.cc src/layer/ave_pooling.cc src/layer/fully_connected.cc src/layer/max_pooling.cc src/layer/relu.cc src/layer/sigmoid.cc src/layer/softmax.cc 
+layer: src/layer/conv.cc src/layer/conv_gpu.cc src/layer/ave_pooling.cc src/layer/fully_connected.cc src/layer/max_pooling.cc src/layer/relu.cc src/layer/sigmoid.cc src/layer/softmax.cc 
 	nvcc --compile src/layer/ave_pooling.cc -o src/layer/ave_pooling.o -I./ -I third_party/eigen
 	nvcc --compile src/layer/conv.cc -o src/layer/conv.o -I./ -I third_party/eigen
+	nvcc --compile src/layer/conv_gpu.cc -o src/layer/conv_gpu.o -I./ -I third_party/eigen
 	nvcc --compile src/layer/fully_connected.cc -o src/layer/fully_connected.o -I./ -I third_party/eigen
 	nvcc --compile src/layer/max_pooling.cc -o src/layer/max_pooling.o -I./ -I third_party/eigen
 	nvcc --compile src/layer/relu.cc -o src/layer/relu.o -I./ -I third_party/eigen

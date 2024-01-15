@@ -32,27 +32,24 @@ __global__ void conv_forward_kernel(float* output, const float* input, const flo
                 {
                     int input_row = row_idx + kernel_row;
                     int input_col = col_idx + kernel_col;
+                    int kernel_area = kernel_size * kernel_size;
 
                     accumulator += input[(bx * (input_channel * height * width)) +
-                        (in_idx * (height * width)) +
-                        (input_row * width) +
-                        input_col] *
-                        kernel[(by * (input_channel * kernel_size * kernel_size)) +
-                        (in_idx * (kernel_size * kernel_size)) +
-                        (kernel_row * kernel_size) +
-                        kernel_col];
+                        (in_idx * (height * width)) + (input_row * width) + input_col] *
+                        kernel[(by * (input_channel * kernel_area)) +
+                        (in_idx * kernel_area) +
+                        (kernel_row * kernel_size) + kernel_col];
                 }
             }
         }
         output[(bx * (output_channel * height_out * width_out)) +
             (by * (height_out * width_out)) +
-            (row_idx * width_out) +
-            col_idx] = accumulator;
+            (row_idx * width_out) + col_idx] = accumulator;
     } // endif (row_idx < height_out && col_idx < width_out)
 }
 
 void GPU_Conv_Forward::execute(const float* in_data, float* out_data, const float* weight_data,
-    const int n, const int out_channel, const int in_channel,
+    const int n, const int in_channel, const int out_channel,
     const int height_in, const int width_in, const int kernel_height)
 {
     // Calculate output dimensions
