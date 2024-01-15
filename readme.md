@@ -1,5 +1,8 @@
 # Source
-Copyright of **mini-dnn-cpp**, which is a C++ demo of deep neural networks. It is implemented purely in C++, whose only dependency, Eigen, is header-only. See more details on LICENSE file.
+Copyright of [**mini-dnn-cpp**](https://github.com/iamhankai/mini-dnn-cpp), which is a C++ demo of deep neural networks. It is implemented purely in C++, whose only dependency, Eigen, is header-only. See more details on LICENSE file.
+
+# Data
+Pull from the [**fashion-MNIST**](https://github.com/zalandoresearch/fashion-mnist).
 
 # Motivation
 This is a final project of my course: Introduce to Parallel Programming at Ho Chi Minh city University of Science.
