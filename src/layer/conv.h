@@ -48,7 +48,7 @@ public:
 	void forward(const Matrix& bottom);
 
 	// Below is the additional function that does not exist in the Layer class
-	void forward(const Matrix& bottom, int use_gpu = -1);
+	void forward(const Matrix& bottom, int use_gpu);
 
 	void backward(const Matrix& bottom, const Matrix& grad_top);
 	void update(Optimizer& opt);

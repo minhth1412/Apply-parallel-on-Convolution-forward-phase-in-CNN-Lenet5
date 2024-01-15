@@ -54,7 +54,7 @@ void Conv::im2col(const Vector& image, Matrix& data_col) {
 
 // In this project, the requirement is optimize the convolution layer using CUDA.
 // And only need to code the inference phase (forward pass) of the convolution layer.
-void Conv::forward(const Matrix& bottom, int use_gpu = -1) {
+void Conv::forward(const Matrix& bottom, int use_gpu) {
 	// initialize
 	int n_sample = bottom.cols();
 	GpuTimer timer;

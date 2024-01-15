@@ -1,6 +1,6 @@
 #ifndef SRC_LAYER_CUSTOM_GPU_CONV_FORWARD_H
 #define SRC_LAYER_CUSTOM_GPU_CONV_FORWARD_H
-
+#include <cuda_runtime.h>
 
 class GPU_Conv_Forward
 {

@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <cstdlib>
 #include <cuda_runtime.h>
 
 #define CHECK(call)\

@@ -1,56 +1,45 @@
-# Compiler and Flags
-NVCC := nvcc
-CUDA_LIBRARIES := -lm -lcuda -lrt
-CUDA_INCLUDE := -I./ -L/usr/local/cuda/lib64 -lcudart
+network.o: src/network.cc
+	nvcc --compile src/network.cc -o src/network.o -I src/ -I third_party/eigen
 
-# Directories
-SRC_DIR := src
-LAYER_DIR := $(SRC_DIR)/layer
-LOSS_DIR := $(SRC_DIR)/loss
-OPTIMIZER_DIR := $(SRC_DIR)/optimizer
-CUSTOM_DIR := $(LAYER_DIR)/custom
+mnist.o: src/mnist.cc
+	nvcc --compile src/mnist.cc -o src/mnist.o -I src/ -I third_party/eigen
 
-main: main.o build_dnn.o $(SRC_DIR)/network.o $(SRC_DIR)/mnist.o $(LAYER_DIR)/*.o $(LOSS_DIR)/*.o $(OPTIMIZER_DIR)/*.o
-	$(NVCC) -o $@ $(CUDA_LIBRARIES) $^ $(CUDA_INCLUDE)
+layer: src/layer/conv.cc src/layer/ave_pooling.cc src/layer/fully_connected.cc src/layer/max_pooling.cc src/layer/relu.cc src/layer/sigmoid.cc src/layer/softmax.cc 
+	nvcc --compile src/layer/ave_pooling.cc -o src/layer/ave_pooling.o -I./ -I third_party/eigen
+	nvcc --compile src/layer/conv.cc -o src/layer/conv.o -I./ -I third_party/eigen
+	nvcc --compile src/layer/fully_connected.cc -o src/layer/fully_connected.o -I./ -I third_party/eigen
+	nvcc --compile src/layer/max_pooling.cc -o src/layer/max_pooling.o -I./ -I third_party/eigen
+	nvcc --compile src/layer/relu.cc -o src/layer/relu.o -I./ -I third_party/eigen
+	nvcc --compile src/layer/sigmoid.cc -o src/layer/sigmoid.o -I./ -I third_party/eigen
+	nvcc --compile src/layer/softmax.cc -o src/layer/softmax.o -I./ -I third_party/eigen
 
-train: train.o $(SRC_DIR)/network.o $(SRC_DIR)/mnist.o $(LAYER_DIR)/*.o $(LOSS_DIR)/*.o $(OPTIMIZER_DIR)/*.o
-	$(NVCC) -o $@ $(CUDA_LIBRARIES) $^ $(CUDA_INCLUDE)
+custom:
+	nvcc --compile src/layer/custom/gpu_conv_forward_v0.cu -o src/layer/custom/gpu_conv_forward_v0.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+	nvcc --compile src/layer/custom/gpu_utils.cu -o src/layer/custom/gpu_utils.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
+		
+loss: src/loss/cross_entropy_loss.cc src/loss/mse_loss.cc
+	nvcc -arch=sm_75 --compile src/loss/cross_entropy_loss.cc -o src/loss/cross_entropy_loss.o -I./ -I third_party/eigen
+	nvcc -arch=sm_75 --compile src/loss/mse_loss.cc -o src/loss/mse_loss.o -I./ -I third_party/eigen
 
-build_dnn.o: build_dnn.cc
-	$(NVCC) --compile $< $(CUDA_INCLUDE)
+optimizer: src/optimizer/sgd.cc
+	nvcc -arch=sm_75 --compile src/optimizer/sgd.cc -o src/optimizer/sgd.o -I./ -I third_party/eigen
 
-$(SRC_DIR)/network.o: $(SRC_DIR)/network.cc
-	$(NVCC) --compile $< -o $@ $(CUDA_INCLUDE)
+main: main.o custom
+	nvcc -o main -lm -lcuda -lrt main.o src/network.o src/mnist.o src/layer/*.o src/loss/*.o src/layer/custom/*.o -I./ -I third_party/eigen -L/usr/local/cuda/lib64 -lcudart 
 
-$(SRC_DIR)/mnist.o: $(SRC_DIR)/mnist.cc
-	$(NVCC) --compile $< -o $@ $(CUDA_INCLUDE)
+main.o: main.cc
+	nvcc --compile main.cc -I./ -I third_party/eigen
 
-$(LAYER_DIR)/%.o: $(LAYER_DIR)/%.cc
-	$(NVCC) --compile $< -o $@ $(CUDA_INCLUDE)
-
-$(LOSS_DIR)/%.o: $(LOSS_DIR)/%.cc
-	$(NVCC) --compile $< -o $@ $(CUDA_INCLUDE)
-
-$(OPTIMIZER_DIR)/%.o: $(OPTIMIZER_DIR)/%.cc
-	$(NVCC) --compile $< -o $@ $(CUDA_INCLUDE)
-
-custom: $(CUSTOM_DIR)/gpu_utils.o $(CUSTOM_DIR)/gpu_conv_forward_v0.o #$(CUSTOM_DIR)/gpu_conv_forward_v1.o $(CUSTOM_DIR)/gpu_conv_forward_v2.o
-
-$(CUSTOM_DIR)/%.o: $(CUSTOM_DIR)/%.cu
-	$(NVCC) --compile $< -o $@ $(CUDA_INCLUDE)
-
-# Clean
 clean:
-	rm -f train main
-
-clean_o:
-	rm -f *.o $(SRC_DIR)/*.o $(LAYER_DIR)/*.o $(LOSS_DIR)/*.o $(OPTIMIZER_DIR)/*.o $(CUSTOM_DIR)/*.o
+	rm -f main train
+	rm -f *.o src/*.o src/layer/*.o src/loss/*.o src/optimizer/*.o src/layer/custom/*.o
 
 setup:
-	make clean_o
-	make clean
 	make network.o
 	make mnist.o
 	make layer
 	make loss
 	make optimizer
+
+run: main
+	./main
