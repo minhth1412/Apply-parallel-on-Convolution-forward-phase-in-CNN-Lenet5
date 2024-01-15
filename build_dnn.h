@@ -17,7 +17,7 @@
 #include "src/mnist.h"
 #include "src/network.h"
 
-Network dnnNetwork(int use_gpu = -1)
+Network dnnNetwork(int use_gpu)
 {
 	// define dnn network
 	// Setup network structure for training, following the modified LeNet-5 architecture that is given in the final project description
