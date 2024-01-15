@@ -1,11 +1,11 @@
-#include "conv.h"
+#include "conv_gpu.h"
 #include <math.h>
 #include <iostream>
 #include "custom/gpu_utils.h"
 #include "custom/gpu_conv_forward.h"
 
 
-void Conv::init() {
+void Conv_gpu::init() {
 	height_out = (1 + (height_in - height_kernel + 2 * pad_h) / stride);
 	width_out = (1 + (width_in - width_kernel + 2 * pad_w) / stride);
 	dim_out = height_out * width_out * channel_out;
@@ -23,7 +23,7 @@ void Conv::init() {
 // im2col, used for bottom
 // image size: Vector (height_in * width_in * channel_in)
 // data_col size: Matrix (hw_out, hw_kernel * channel_in)
-void Conv::im2col(const Vector& image, Matrix& data_col) {
+void Conv_gpu::im2col(const Vector& image, Matrix& data_col) {
 	int hw_in = height_in * width_in;
 	int hw_kernel = height_kernel * width_kernel;
 	int hw_out = height_out * width_out;
@@ -54,7 +54,7 @@ void Conv::im2col(const Vector& image, Matrix& data_col) {
 
 // In this project, the requirement is optimize the convolution layer using CUDA.
 // And only need to code the inference phase (forward pass) of the convolution layer.
-void Conv::forward(const Matrix& bottom) {
+void Conv_gpu::forward(const Matrix& bottom) {
 	// initialize
 	int n_sample = bottom.cols();
 	GpuTimer timer;
@@ -63,28 +63,26 @@ void Conv::forward(const Matrix& bottom) {
 	// Base on channel_in in the Conv class, we can define which is layer 1 (1st convolution) and which is layer 3 (2nd one).
 	std::cout << "Convolution layer " << (channel_in == 1) ? ("1") : ("3");
 	timer.Start();
+	std::cout << ", using device:\n";
+	// Create constant variables for GPU kernel execution
+	float* in_data = (float*)bottom.data();
+	float* out_data = (float*)top.data();
+	float* weight_data = (float*)weight.data();
 
-	std::cout << ", using host: ";
-	for (int i = 0; i < n_sample; i++) {
-		// im2col
-		Matrix data_col;
-		im2col(bottom.col(i), data_col);
-		data_cols[i] = data_col;
-		// conv by product
-		Matrix result = data_col * weight;  // result: (hw_out, channel_out)
-		result.rowwise() += bias.transpose();
-		top.col(i) = Eigen::Map<Vector>(result.data(), result.size());
-	}
+	GPU_Conv_Forward gpu_conv_forward;
+
+	gpu_conv_forward.execute(in_data, out_data, weight_data,
+		n_sample, channel_in, channel_out, height_in, width_in, height_kernel);
 
 	// Stop the timer
 	timer.Stop();
-	std::cout << timer.Elapsed() << " ms\n";
+	std::cout << "Total time running this layer: " timer.Elapsed() << " ms\n";
 }
 
 // col2im, used for grad_bottom
 // data_col size: Matrix (hw_out, hw_kernel * channel_in)
 // image size: Vector (height_in * width_in * channel_in)
-void Conv::col2im(const Matrix& data_col, Vector& image) {
+void Conv_gpu::col2im(const Matrix& data_col, Vector& image) {
 	int hw_in = height_in * width_in;
 	int hw_kernel = height_kernel * width_kernel;
 	int hw_out = height_out * width_out;
@@ -114,7 +112,7 @@ void Conv::col2im(const Matrix& data_col, Vector& image) {
 }
 
 
-void Conv::backward(const Matrix& bottom, const Matrix& grad_top) {
+void Conv_gpu::backward(const Matrix& bottom, const Matrix& grad_top) {
 	int n_sample = bottom.cols();
 	grad_weight.setZero();
 	grad_bias.setZero();
@@ -138,7 +136,7 @@ void Conv::backward(const Matrix& bottom, const Matrix& grad_top) {
 	}
 }
 
-void Conv::update(Optimizer& opt) {
+void Conv_gpu::update(Optimizer& opt) {
 	Vector::AlignedMapType weight_vec(weight.data(), weight.size());
 	Vector::AlignedMapType bias_vec(bias.data(), bias.size());
 	Vector::ConstAlignedMapType grad_weight_vec(grad_weight.data(), grad_weight.size());
@@ -148,7 +146,7 @@ void Conv::update(Optimizer& opt) {
 	opt.update(bias_vec, grad_bias_vec);
 }
 
-std::vector<float> Conv::get_parameters() const {
+std::vector<float> Conv_gpu::get_parameters() const {
 	std::vector<float> res(weight.size() + bias.size());
 	// Copy the data of weights and bias to a long vector
 	std::copy(weight.data(), weight.data() + weight.size(), res.begin());
@@ -156,14 +154,14 @@ std::vector<float> Conv::get_parameters() const {
 	return res;
 }
 
-void Conv::set_parameters(const std::vector<float>& param) {
+void Conv_gpu::set_parameters(const std::vector<float>& param) {
 	if (static_cast<int>(param.size()) != weight.size() + bias.size())
 		throw std::invalid_argument("Parameter size does not match");
 	std::copy(param.begin(), param.begin() + weight.size(), weight.data());
 	std::copy(param.begin() + weight.size(), param.end(), bias.data());
 }
 
-std::vector<float> Conv::get_derivatives() const {
+std::vector<float> Conv_gpu::get_derivatives() const {
 	std::vector<float> res(grad_weight.size() + grad_bias.size());
 	// Copy the data of weights and bias to a long vector
 	std::copy(grad_weight.data(), grad_weight.data() + grad_weight.size(), res.begin());

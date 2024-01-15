@@ -22,7 +22,7 @@ int main()
 
 	// Run dnn with convolutional layers running on CPU
 	std::cout << "Network using host:\n";
-	Network dnn = dnnNetwork(-1);
+	Network dnn = dnnNetwork();
 	dnn.load_parameters("./model/trained_model_32_64.bin");
 	dnn.forward(dataset.test_data);
 	accuracy = compute_accuracy(dnn.output(), dataset.test_labels);
@@ -33,9 +33,9 @@ int main()
 	// Version 0: Basic GPU Convolution Kernel
 	std::cout << "Network using device on convolutional layers:\n";
 	std::cout << "Version 0: Basic GPU Convolution Kernel\n";
-	Network dnn2 = dnnNetwork(0);
+	Network dnn2 = dnnNetwork_gpu();
 	dnn2.load_parameters("./model/trained_model_32_64.bin");
-	dnn2.forward(dataset.test_data, 0);
+	dnn2.forward(dataset.test_data);
 	accuracy = compute_accuracy(dnn2.output(), dataset.test_labels);
 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
 

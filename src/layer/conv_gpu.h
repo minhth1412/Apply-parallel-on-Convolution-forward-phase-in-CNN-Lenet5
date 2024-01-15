@@ -1,10 +1,10 @@
-#ifndef SRC_LAYER_CONV_H_
-#define SRC_LAYER_CONV_H_
+#ifndef SRC_LAYER_CONV_GPU_H_
+#define SRC_LAYER_CONV_GPU_H_
 
 #include <vector>
 #include "../layer.h"
 
-class Conv : public Layer {
+class Conv_gpu : public Layer {
 private:
 	const int dim_in;
 	int dim_out;
@@ -33,7 +33,7 @@ private:
 	void init();
 
 public:
-	Conv(int channel_in, int height_in, int width_in, int channel_out,
+	Conv_gpu(int channel_in, int height_in, int width_in, int channel_out,
 		int height_kernel, int width_kernel,
 		int stride = 1, int pad_w = 0, int pad_h = 0) :
 		dim_in(channel_in* height_in* width_in),
@@ -60,4 +60,4 @@ public:
 	void set_parameters(const std::vector<float>& param);
 };
 
-#endif  // SRC_LAYER_CONV_H_
+#endif  // SRC_LAYER_CONV_GPU_H_
