@@ -14,8 +14,8 @@ __global__ void conv_forward_kernel(float* output, const float* input, const flo
 
     int width_grid = (width_out + TILE_WIDTH - 1) / TILE_WIDTH;
 
-    int bx = blockIdx.x; 
-    int by = blockIdx.y;  
+    int bx = blockIdx.x;
+    int by = blockIdx.y;
     int bz = blockIdx.z;
     int row_idx = (bz / width_grid) * TILE_WIDTH + threadIdx.y; // row of the image matrix
     int col_idx = (bz % width_grid) * TILE_WIDTH + threadIdx.x; // col of the image matrix
@@ -52,7 +52,7 @@ void GPU_Conv_Forward::execute(const float* in_data, float* out_data, const floa
     const int n, const int in_channel, const int out_channel,
     const int height_in, const int width_in, const int kernel_height)
 {
-    printf("Version 0 - Basic implement:\n");
+    printf("Version 4:\n");
     // Calculate output dimensions
     const int height_out = height_in - kernel_height + 1;
     const int width_out = width_in - kernel_height + 1;

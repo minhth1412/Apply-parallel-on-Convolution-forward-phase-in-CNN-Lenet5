@@ -4,7 +4,6 @@
 #include "custom/gpu_utils.h"
 #include "custom/gpu_conv_forward.h"
 
-
 void Conv_gpu::init() {
 	height_out = (1 + (height_in - height_kernel + 2 * pad_h) / stride);
 	width_out = (1 + (width_in - width_kernel + 2 * pad_w) / stride);

@@ -7,7 +7,7 @@
 #include "src/network.h"
 #include "src/layer/custom/gpu_utils.h"
 
-int main()
+int main(int argc, char** argv)
 {
 	printDeviceInfo();
 
@@ -21,68 +21,47 @@ int main()
 	std::cout << "-----------------------------------------------\n";
 
 	// Run dnn with convolutional layers running on CPU
+#if defined(CPU_VERSION) == false
 	std::cout << "Network using host:\n";
 	Network dnn = dnnNetwork();
 	dnn.load_parameters("./model/trained_model_32_64.bin");
 	dnn.forward(dataset.test_data);
 	accuracy = compute_accuracy(dnn.output(), dataset.test_labels);
 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
-
 	// Run dnn with convolutional layers running on GPU
-
+#elif (GPU_VERSION == 1)
 	// Version 0: Basic GPU Convolution Kernel
-	std::cout << "Network using device on convolutional layers:\n";
 	std::cout << "Version 0: Basic GPU Convolution Kernel\n";
-	Network dnn2 = dnnNetwork_gpu();
-	dnn2.load_parameters("./model/trained_model_32_64.bin");
-	dnn2.forward(dataset.test_data);
-	accuracy = compute_accuracy(dnn2.output(), dataset.test_labels);
+	Network dnn = dnnNetwork_gpu();
+	dnn.load_parameters("./model/trained_model_32_64.bin");
+	dnn.forward(dataset.test_data);
+	accuracy = compute_accuracy(dnn.output(), dataset.test_labels);
 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
-
+#elif (GPU_VERSION == 2)
 	// Version 1: Basic GPU Convolution Kernel + Shared Memory
-// #if __CUDA_ARCH__ >= 300
-// 	std::cout << "Network using device on convolutional layers:\n";
-// 	std::cout << "Version 1: Basic GPU Convolution Kernel + Shared Memory\n";
-// 	Network dnn3 = dnnNetwork(1);
-// 	dnn3.load_parameters("./model/trained_model_32_64.bin");
-// 	dnn3.forward(dataset.test_data);
-// 	accuracy = compute_accuracy(dnn3.output(), dataset.test_labels);
-// 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
-// #endif
-
-// 	// Version 2: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters
-// #if __CUDA_ARCH__ >= 300
-// 	std::cout << "Network using device on convolutional layers:\n";
-// 	std::cout << "Version 2: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters\n";
-// 	Network dnn4 = dnnNetwork(2);
-// 	dnn4.load_parameters("./model/trained_model_32_64.bin");
-// 	dnn4.forward(dataset.test_data);
-// 	accuracy = compute_accuracy(dnn4.output(), dataset.test_labels);
-// 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
-// #endif
-
-// 	// Version 3: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters + Parallelize over images
-// #if __CUDA_ARCH__ >= 300
-// 	std::cout << "Network using device on convolutional layers:\n";
-// 	std::cout << "Version 3: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters + Parallelize over images\n";
-// 	Network dnn5 = dnnNetwork(3);
-// 	dnn5.load_parameters("./model/trained_model_32_64.bin");
-// 	dnn5.forward(dataset.test_data);
-// 	accuracy = compute_accuracy(dnn5.output(), dataset.test_labels);
-// 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
-// #endif
-
-// 	// Version 4: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters + Parallelize over images + Parallelize over channels
-// #if __CUDA_ARCH__ >= 300
-// 	std::cout << "Network using device on convolutional layers:\n";
-// 	std::cout << "Version 4: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters + Parallelize over images + Parallelize over channels\n";
-// 	Network dnn6 = dnnNetwork(4);
-// 	dnn6.load_parameters("./model/trained_model_32_64.bin");
-// 	dnn6.forward(dataset.test_data);
-// 	accuracy = compute_accuracy(dnn6.output(), dataset.test_labels);
-// 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
-// #endif
-
+	std::cout << "Version 1: Basic GPU Convolution Kernel + Shared Memory\n";
+	Network dnn = dnnNetwork_gpu();
+	dnn.load_parameters("./model/trained_model_32_64.bin");
+	dnn.forward(dataset.test_data);
+	accuracy = compute_accuracy(dnn.output(), dataset.test_labels);
+	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
+#elif (GPU_VERSION == 3)
+	// Version 2: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters
+	std::cout << "Version 2: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters\n";
+	Network dnn = dnnNetwork_gpu();
+	dnn.load_parameters("./model/trained_model_32_64.bin");
+	dnn.forward(dataset.test_data);
+	accuracy = compute_accuracy(dnn.output(), dataset.test_labels);
+	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
+#elif (GPU_VERSION == 4)
+	// Version 3: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters + Parallelize over images
+	std::cout << "Version 3: Basic GPU Convolution Kernel + Shared Memory + Parallelize over filters + Parallelize over images\n";
+	Network dnn = dnnNetwork_gpu();
+	dnn.load_parameters("./model/trained_model_32_64.bin");
+	dnn.forward(dataset.test_data);
+	accuracy = compute_accuracy(dnn.output(), dataset.test_labels);
+	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
+#endif
 
 	return 0;
 }
