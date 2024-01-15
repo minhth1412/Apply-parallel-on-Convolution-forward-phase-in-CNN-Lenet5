@@ -6,7 +6,5 @@ aux_source_directory(./loss DIR_LIB_SRCS)
 aux_source_directory(./optimizer DIR_LIB_SRCS)
 aux_source_directory(./layer/custom DIR_LIB_SRCS)
 
-set_source_files_properties(./layer/custom/gpu_conv_forward.cu ./layer/custom/gpu_utils.cu PROPERTIES LANGUAGE CUDA)
-
 # Generate a linking library
 add_library(MiniDNNLib ${DIR_LIB_SRCS} "layer/custom/gpu_conv_forward.h" "layer/custom/gpu_utils.h")

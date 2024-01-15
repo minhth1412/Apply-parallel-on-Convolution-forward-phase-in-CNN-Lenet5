@@ -95,10 +95,6 @@ void Conv::forward(const Matrix& bottom, int use_gpu) {
 	std::cout << timer.Elapsed() << " ms\n";
 }
 
-void Conv::forward(const Matrix& bottom) {
-	forward(bottom, -1);
-}
-
 // col2im, used for grad_bottom
 // data_col size: Matrix (hw_out, hw_kernel * channel_in)
 // image size: Vector (height_in * width_in * channel_in)

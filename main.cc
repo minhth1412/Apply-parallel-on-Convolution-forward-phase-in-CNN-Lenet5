@@ -35,7 +35,7 @@ int main()
 	std::cout << "Version 0: Basic GPU Convolution Kernel\n";
 	Network dnn2 = dnnNetwork(0);
 	dnn2.load_parameters("./model/trained_model_32_64.bin");
-	dnn2.forward(dataset.test_data);
+	dnn2.forward(dataset.test_data, 0);
 	accuracy = compute_accuracy(dnn2.output(), dataset.test_labels);
 	std::cout << "Test accuracy: " << accuracy << "\n---------------------------------------------- - \n";
 

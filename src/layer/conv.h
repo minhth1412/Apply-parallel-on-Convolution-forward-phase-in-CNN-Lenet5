@@ -45,10 +45,11 @@ public:
 		init();
 	}
 
-	void forward(const Matrix& bottom);
-
-	// Below is the additional function that does not exist in the Layer class
-	void forward(const Matrix& bottom, int use_gpu);
+	// Below is the function with additional parameter: use_gpu,
+	// use_gpu = -1: use CPU
+	// use_gpu = 0: use GPU, basic version
+	// use_gpu > 0: use GPU, the number is presented the version of optimization
+	void forward(const Matrix& bottom, int use_gpu = -1);
 
 	void backward(const Matrix& bottom, const Matrix& grad_top);
 	void update(Optimizer& opt);
