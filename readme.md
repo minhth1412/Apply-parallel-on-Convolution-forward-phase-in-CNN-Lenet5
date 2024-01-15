@@ -9,7 +9,7 @@ Create a notebook file on [google colab](https://colab.research.google.com/), th
 
 ```shell
 from IPython.display import clear_output
-!git clone https://github.com/minhth1412/mini-dnn-cpp-master
+!git clone https://github.com/minhth1412/Apply-parallel-on-Convolution-forward-phase-in-CNN-Lenet5
 !cd mini-dnn-cpp-master && make clean
 !cd mini-dnn-cpp-master && make setup
 
